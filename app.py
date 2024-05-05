@@ -12,7 +12,18 @@ from langchain.chains import create_history_aware_retriever, create_retrieval_ch
 from sentence_transformers import SentenceTransformer
 
 
-# app config
+def get_vectorstore_from_url(url):
+    loader = WebBaseLoader(url)
+    document = loader.load()
+    
+    text_splitter = RecursiveCharacterTextSplitter()
+    document_chunks = text_splitter.split_documents(document)
+    
+    embeddings = HuggingFaceInstructEmbeddings(model_name="BAAI/bge-small-en-v1.5")
+    vector_store = Chroma.from_documents(document_chunks,embeddings)
+
+    return vector_store
+
 st.set_page_config(page_title="YarnitCaseStudy", page_icon="🤖")
 st.title("YarnitCaseStudy")
 
@@ -24,3 +35,11 @@ with st.sidebar:
 
 if website_url is None or website_url == "":
     st.info("Please enter a website URL")
+else:
+    # session state
+    if "chat_history" not in st.session_state:
+        st.session_state.chat_history = [
+            AIMessage(content="Hello, I am a bot. How can I help you?"),
+        ]
+    if "vector_store" not in st.session_state:
+        st.session_state.vector_store = get_vectorstore_from_url(website_url)    
