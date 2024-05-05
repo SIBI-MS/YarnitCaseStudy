@@ -12,3 +12,15 @@ from langchain.chains import create_history_aware_retriever, create_retrieval_ch
 from sentence_transformers import SentenceTransformer
 
 
+# app config
+st.set_page_config(page_title="YarnitCaseStudy", page_icon="🤖")
+st.title("YarnitCaseStudy")
+
+
+# sidebar
+with st.sidebar:
+    st.header("Settings")
+    website_url = st.text_input("Website URL")
+
+if website_url is None or website_url == "":
+    st.info("Please enter a website URL")
